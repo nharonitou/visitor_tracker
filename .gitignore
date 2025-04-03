@@ -28,6 +28,9 @@ Thumbs.db
 *.swp
 *.swo
 
-# run files
-deploy.sh
-run_with_nohup.sh
+# Shell scripts
+*.sh
+
+# Specific run files (already covered by *.sh above)
+# deploy.sh
+# run_with_nohup.sh
