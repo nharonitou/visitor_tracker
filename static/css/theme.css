@@ -280,6 +280,8 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
     margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .table th,
@@ -309,7 +311,7 @@ h1, h2, h3, h4, h5, h6 {
 .table th:nth-child(1), .table td:nth-child(1) { width: 3%; } /* ID */
 .table th:nth-child(2), .table td:nth-child(2),
 .table th:nth-child(3), .table td:nth-child(3) { width: 7%; } /* First/Last Name */
-.table th:nth-child(4), .table td:nth-child(4) { width: 7%; } /* Type */
+.table th:nth-child(4), .table td:nth-child(4) { width: 9%; } /* Type - Increased width to prevent wrapping */
 .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* Host */
 .table th:nth-child(6), .table td:nth-child(6),
 .table th:nth-child(7), .table td:nth-child(7) { width: 8%; } /* Department/Branch */
@@ -365,6 +367,9 @@ h1, h2, h3, h4, h5, h6 {
     margin-right: 0; /* Reset margin */
     position: relative;
     z-index: 1;
+    width: 100%; /* Make badge take full width of container */
+    max-width: 120px; /* Limit maximum width */
+    margin: 0 auto; /* Center the badge */
 }
 
 .badge:hover {
@@ -967,8 +972,9 @@ form {
     vertical-align: middle;
     line-height: 1.2;
     color: white !important;
-    width: auto;
-    min-width: 70px; /* Medium width button */
+    width: 100%; /* Make button take full width of container */
+    max-width: 80px; /* Limit maximum width */
+    min-width: 60px; /* Medium width button */
     margin: 0 auto; /* Center the button in the cell */
     position: relative;
     letter-spacing: 0.5px;
@@ -1147,7 +1153,43 @@ form {
 }
 
 /* Responsive adjustments */
+@media (max-width: 992px) {
+    /* Adjust table for medium screens */
+    .table th, .table td {
+        padding: 0.6rem;
+        font-size: 0.95rem;
+    }
+    
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 0.8em;
+    }
+    
+    .checkout-btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.95rem;
+    }
+}
+
 @media (max-width: 768px) {
+    /* Adjust table for small screens */
+    .table th, .table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .badge {
+        padding: 0.35em 0.7em;
+        font-size: 0.75em;
+        max-width: 100px;
+    }
+    
+    .checkout-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.9rem;
+        max-width: 70px;
+    }
+    
     .export-button-container {
         bottom: 15px;
         left: 15px;
@@ -1156,6 +1198,31 @@ form {
     .export-btn {
         width: 45px;
         height: 45px;
+    }
+    
+    /* Adjust column widths for small screens */
+    .table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* Type - Increased width */
+    .table th:nth-child(11), .table td:nth-child(11) { width: 12%; } /* Status - Increased width */
+    .table th:nth-child(12), .table td:nth-child(12) { width: 8%; } /* Actions - Increased width */
+}
+
+@media (max-width: 576px) {
+    /* Adjust table for extra small screens */
+    .table th, .table td {
+        padding: 0.4rem;
+        font-size: 0.85rem;
+    }
+    
+    .badge {
+        padding: 0.3em 0.6em;
+        font-size: 0.7em;
+        max-width: 90px;
+    }
+    
+    .checkout-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+        max-width: 60px;
     }
 }
 
