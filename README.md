@@ -30,22 +30,22 @@ This method will set up the application as a systemd service that automatically 
 
 3. After deployment, the application will be available at:
    ```
-   http://matrix.1stadvantage.org:8080
+   http://matrix.1staxxxxx.org:8080
    ```
 
 4. To manage the service:
    ```
    # Check status
-   ssh matrix.1stadvantage.org "sudo systemctl status visitor_tracker"
+   ssh matrix.1stxxxxxx.org "sudo systemctl status visitor_tracker"
 
    # Restart the service
-   ssh matrix.1stadvantage.org "sudo systemctl restart visitor_tracker"
+   ssh matrix.1stxxxxxx.org "sudo systemctl restart visitor_tracker"
 
    # Stop the service
-   ssh matrix.1stadvantage.org "sudo systemctl stop visitor_tracker"
+   ssh matrix.1stxxxxxx.org "sudo systemctl stop visitor_tracker"
 
    # View logs
-   ssh matrix.1stadvantage.org "sudo journalctl -u visitor_tracker"
+   ssh matrix.1stxxxxxxx.org "sudo journalctl -u visitor_tracker"
    ```
 
 ### Option 2: Run with nohup
@@ -57,15 +57,15 @@ This method will run the application in the background using nohup, which keeps 
    chmod +x run_with_nohup.sh
    ```
 
-2. Copy the application files to matrix.1stadvantage.org:
+2. Copy the application files to matrix.1stxxxxxxx.org:
    ```
    rsync -avz --exclude '__pycache__' --exclude '*.pyc' --exclude '.git' \
-       ./* zebra@matrix.1stadvantage.org:~/visitor_tracker/
+       ./* zebra@matrix.1stxxxxxxx.org:~/visitor_tracker/
    ```
 
-3. SSH into matrix.1stadvantage.org:
+3. SSH into matrix.1stxxxxxx.org:
    ```
-   ssh zebra@matrix.1stadvantage.org
+   ssh zebra@matrix.1stxxxxxxx.org
    ```
 
 4. Install dependencies:
@@ -81,7 +81,7 @@ This method will run the application in the background using nohup, which keeps 
 
 6. The application will be available at:
    ```
-   http://matrix.1stadvantage.org:8080
+   http://matrix.1stxxxxxxx.org:8080
    ```
 
 7. To check the logs:

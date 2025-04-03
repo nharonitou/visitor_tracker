@@ -29,7 +29,7 @@ visitor_tracker/
 The application uses the following environment variables, defined in the `.env` file:
 
 ```
-DB_SERVER=sqlcorp.1stadvantage.org\Warehouse
+DB_SERVER=sqlcorp.1staxxxxxxx.org\Waxxxxx
 DB_NAME=Interactions
 DB_USERNAME=
 DB_PASSWORD=
