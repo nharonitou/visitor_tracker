@@ -151,7 +151,7 @@ def get_checked_in_badges():
 
 
 def get_all_visitors():
-    """Retrieves all visitor records, ordered by CheckInTime descending."""
+    """Retrieves all visitor records (excluding pending visitors), ordered by CheckInTime descending."""
     conn = create_connection()
     if not conn:
         return None, "Database connection failed"
@@ -164,6 +164,7 @@ def get_all_visitors():
             VendorName, BadgeNumber, HostEmployeeName, Comments,
             CheckInTime, CheckOutTime, Status
         FROM {DB_TABLE}
+        WHERE Status != 'Pending'
         ORDER BY CheckInTime DESC
     """
     try:
@@ -201,7 +202,8 @@ def get_visitors_by_date_range(start_date, end_date):
         SELECT
             VisitorID, GuestFirstName, GuestLastName, VisitorType, Branch, DepartmentVisited,
             VendorName, BadgeNumber, HostEmployeeName, Comments,
-            CheckInTime, CheckOutTime, Status
+            CheckInTime, CheckOutTime, Status, ColleagueFirstName, ColleagueLastName,
+            AdvanceCheckInTime, SubmissionTime, IsAdvanceCheckIn, SubmitterIPAddress
         FROM {DB_TABLE}
         WHERE CheckInTime BETWEEN ? AND ?
         ORDER BY CheckInTime DESC
@@ -264,6 +266,150 @@ def checkout_visitor(visitor_id):
         return False, f"Database error: {message}"
     except Exception as e:
         logging.error(f"An unexpected error occurred during checkout: {str(e)}")
+        conn.rollback()
+        return False, f"An unexpected error occurred: {str(e)}"
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def add_advanced_visitor(visitor_data):
+    """Adds a new advanced check-in visitor record to the database."""
+    conn = create_connection()
+    if not conn:
+        return False, "Database connection failed"
+
+    cursor = conn.cursor()
+
+    # Convert the advance check-in time from string to datetime
+    try:
+        advance_checkin_time = datetime.fromisoformat(visitor_data.get('AdvanceCheckInTime').replace('Z', '+00:00'))
+    except (ValueError, AttributeError) as e:
+        logging.error(f"Invalid advance check-in time format: {e}")
+        return False, f"Invalid advance check-in time format: {e}"
+
+    sql = f"""
+        INSERT INTO {DB_TABLE} (
+            GuestFirstName, GuestLastName, VisitorType, Branch, DepartmentVisited,
+            VendorName, BadgeNumber, HostEmployeeName, Comments, 
+            ColleagueFirstName, ColleagueLastName, AdvanceCheckInTime,
+            SubmissionTime, IsAdvanceCheckIn, SubmitterIPAddress, Status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, 'Pending')
+    """
+    params = (
+        visitor_data.get('GuestFirstName'),
+        visitor_data.get('GuestLastName'),
+        visitor_data.get('VisitorType'),
+        visitor_data.get('Branch'),
+        visitor_data.get('DepartmentVisited'),
+        visitor_data.get('VendorName'),
+        visitor_data.get('BadgeNumber'),
+        visitor_data.get('HostEmployeeName'),
+        visitor_data.get('Comments'),
+        visitor_data.get('ColleagueFirstName'),
+        visitor_data.get('ColleagueLastName'),
+        advance_checkin_time,
+        visitor_data.get('IsAdvanceCheckIn', True),
+        visitor_data.get('SubmitterIPAddress')
+    )
+
+    try:
+        logging.info(f"Executing SQL for advanced check-in: {sql} with params: {params}")
+        cursor.execute(sql, params)
+        conn.commit() # Commit the transaction
+        logging.info("Advanced check-in visitor added successfully.")
+        return True, "Advanced check-in visitor added successfully."
+    except pyodbc.Error as ex:
+        sqlstate = ex.args[0]
+        message = ex.args[1]
+        logging.error(f"Failed to add advanced check-in visitor. SQLSTATE: {sqlstate} Message: {message}")
+        conn.rollback() # Rollback on error
+        return False, f"Database error: {message}"
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {str(e)}")
+        conn.rollback()
+        return False, f"An unexpected error occurred: {str(e)}"
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def get_pending_visitors():
+    """Retrieves all pending (pre-registered) visitor records, ordered by AdvanceCheckInTime."""
+    conn = create_connection()
+    if not conn:
+        return None, "Database connection failed"
+
+    cursor = conn.cursor()
+    visitors = []
+    sql = f"""
+        SELECT
+            VisitorID, GuestFirstName, GuestLastName, VisitorType, Branch, DepartmentVisited,
+            VendorName, BadgeNumber, HostEmployeeName, Comments,
+            AdvanceCheckInTime, SubmissionTime, ColleagueFirstName, ColleagueLastName, Status
+        FROM {DB_TABLE}
+        WHERE Status = 'Pending'
+        ORDER BY AdvanceCheckInTime ASC
+    """
+    try:
+        cursor.execute(sql)
+        # Get column names from cursor description
+        columns = [column[0] for column in cursor.description]
+        # Fetch rows and convert to list of dictionaries
+        visitors = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        logging.info(f"Retrieved {len(visitors)} pending visitor records.")
+        return visitors, None
+    except pyodbc.Error as ex:
+        sqlstate = ex.args[0]
+        message = ex.args[1]
+        logging.error(f"Failed to retrieve pending visitors. SQLSTATE: {sqlstate} Message: {message}")
+        return None, f"Database error: {message}"
+    except Exception as e:
+        logging.error(f"An unexpected error occurred while fetching pending visitors: {str(e)}")
+        return None, f"An unexpected error occurred: {str(e)}"
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def checkin_pending_visitor(visitor_id, badge_number):
+    """Updates a pending visitor's status to 'CheckedIn', sets the CheckInTime, and assigns a badge."""
+    conn = create_connection()
+    if not conn:
+        return False, "Database connection failed"
+
+    cursor = conn.cursor()
+    sql = f"""
+        UPDATE {DB_TABLE}
+        SET Status = 'CheckedIn', CheckInTime = GETDATE(), BadgeNumber = ?
+        WHERE VisitorID = ? AND Status = 'Pending'
+    """
+    params = (badge_number, visitor_id)
+
+    try:
+        logging.info(f"Checking in pending visitor ID: {visitor_id} with badge: {badge_number}")
+        cursor.execute(sql, params)
+        # Check if any row was actually updated
+        if cursor.rowcount == 0:
+            conn.rollback() # Rollback if no rows affected
+            logging.warning(f"Pending visitor ID {visitor_id} not found or already checked in.")
+            return False, "Visitor not found or already checked in."
+
+        conn.commit() # Commit the transaction
+        logging.info(f"Pending visitor ID {visitor_id} checked in successfully.")
+        return True, "Visitor checked in successfully."
+    except pyodbc.Error as ex:
+        sqlstate = ex.args[0]
+        message = ex.args[1]
+        logging.error(f"Failed to check in pending visitor ID {visitor_id}. SQLSTATE: {sqlstate} Message: {message}")
+        conn.rollback() # Rollback on error
+        return False, f"Database error: {message}"
+    except Exception as e:
+        logging.error(f"An unexpected error occurred during check-in: {str(e)}")
         conn.rollback()
         return False, f"An unexpected error occurred: {str(e)}"
     finally:

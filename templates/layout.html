@@ -22,7 +22,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand" href="{{ url_for('visitor_form') }}">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="1st Advantage Logo" class="logo">
             </a>
 
@@ -51,7 +51,13 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'visitor_form' %}active{% endif %}" href="{{ url_for('visitor_form') }}">New Visitor</a>
+                            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'visitor_form' %}active{% endif %}" href="{{ url_for('visitor_form') }}">Check-in by Colleague</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'vendor_portal' %}active{% endif %}" href="{{ url_for('vendor_portal') }}">Vendor Check-In</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if request.endpoint == 'view_records' %}active{% endif %}" href="{{ url_for('view_records') }}">View Records</a>

@@ -45,8 +45,8 @@
     --dark-btn-secondary: #4C566A;
 
     /* Heading colors - Dark mode */
-    --dark-heading-main: #EBCB8B;
-    --dark-heading-sub: #B48EAD;
+    --dark-heading-main: #EBCB8B; /* Yellow */
+    --dark-heading-sub: #88C0D0; /* Light blue instead of purple */
 
     /* Status colors */
     --status-success: #859900;
@@ -176,16 +176,36 @@ h1, h2, h3, h4, h5, h6 {
 /* Primary/Confirm button (Check In) */
 .btn-primary {
     color: var(--light-bg) !important;
-    background-color: var(--light-btn-confirm) !important;
-    border-color: var(--light-btn-confirm) !important;
+    background-color: #4a90e2 !important; /* Changed to a blue color */
+    border-color: #4a90e2 !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
 }
 .btn-primary:hover {
     filter: brightness(110%);
     color: var(--light-bg) !important;
-    background-color: var(--light-btn-confirm) !important;
-    border-color: var(--light-btn-confirm) !important;
+    background-color: #3a80d2 !important; /* Darker blue on hover */
+    border-color: #3a80d2 !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow on hover */
+}
+
+/* Check-in button style */
+.checkin-btn {
+    color: var(--light-bg) !important;
+    background-color: #5cb85c !important; /* Green color */
+    border-color: #5cb85c !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    border-radius: 4px;
+}
+.checkin-btn:hover {
+    filter: brightness(110%);
+    color: var(--light-bg) !important;
+    background-color: #4cae4c !important; /* Darker green on hover */
+    border-color: #4cae4c !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Danger/Cancel button (Outline style - Check Out) */
@@ -307,19 +327,49 @@ h1, h2, h3, h4, h5, h6 {
     white-space: nowrap;
 }
 
-/* Column width adjustments */
-.table th:nth-child(1), .table td:nth-child(1) { width: 3%; } /* ID */
-.table th:nth-child(2), .table td:nth-child(2),
-.table th:nth-child(3), .table td:nth-child(3) { width: 7%; } /* First/Last Name */
-.table th:nth-child(4), .table td:nth-child(4) { width: 9%; } /* Type - Increased width to prevent wrapping */
-.table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* Host */
-.table th:nth-child(6), .table td:nth-child(6),
-.table th:nth-child(7), .table td:nth-child(7) { width: 8%; } /* Department/Branch */
-.table th:nth-child(8), .table td:nth-child(8) { width: 5%; } /* Badge */
-.table th:nth-child(9), .table td:nth-child(9),
-.table th:nth-child(10), .table td:nth-child(10) { width: 10%; } /* Check-In/Out Time */
-.table th:nth-child(11), .table td:nth-child(11) { width: 10%; } /* Status - Increased width */
-.table th:nth-child(12), .table td:nth-child(12) { width: 7%; } /* Actions - Decreased width */
+/* Column width adjustments - Current & Recent Visitors tabs */
+#current .table th:nth-child(1), #current .table td:nth-child(1),
+#recent .table th:nth-child(1), #recent .table td:nth-child(1) { width: 3%; } /* ID */
+
+#current .table th:nth-child(2), #current .table td:nth-child(2),
+#current .table th:nth-child(3), #current .table td:nth-child(3),
+#recent .table th:nth-child(2), #recent .table td:nth-child(2),
+#recent .table th:nth-child(3), #recent .table td:nth-child(3) { width: 7%; } /* First/Last Name */
+
+#current .table th:nth-child(4), #current .table td:nth-child(4),
+#recent .table th:nth-child(4), #recent .table td:nth-child(4) { width: 9%; } /* Type */
+
+#current .table th:nth-child(5), #current .table td:nth-child(5),
+#recent .table th:nth-child(5), #recent .table td:nth-child(5) { width: 10%; } /* Host */
+
+#current .table th:nth-child(6), #current .table td:nth-child(6),
+#current .table th:nth-child(7), #current .table td:nth-child(7),
+#recent .table th:nth-child(6), #recent .table td:nth-child(6),
+#recent .table th:nth-child(7), #recent .table td:nth-child(7) { width: 8%; } /* Department/Branch */
+
+#current .table th:nth-child(8), #current .table td:nth-child(8),
+#recent .table th:nth-child(8), #recent .table td:nth-child(8) { width: 5%; } /* Badge */
+
+#current .table th:nth-child(9), #current .table td:nth-child(9),
+#recent .table th:nth-child(9), #recent .table td:nth-child(9),
+#recent .table th:nth-child(10), #recent .table td:nth-child(10) { width: 10%; } /* Check-In/Out Time */
+
+#current .table th:nth-child(10), #current .table td:nth-child(10),
+#recent .table th:nth-child(11), #recent .table td:nth-child(11) { width: 10%; } /* Status */
+
+#current .table th:nth-child(11), #current .table td:nth-child(11),
+#recent .table th:nth-child(12), #recent .table td:nth-child(12) { width: 7%; } /* Actions */
+
+/* Column width adjustments - Pending Visitors tab */
+#pending .table th:nth-child(1), #pending .table td:nth-child(1) { width: 3%; } /* ID */
+#pending .table th:nth-child(2), #pending .table td:nth-child(2),
+#pending .table th:nth-child(3), #pending .table td:nth-child(3) { width: 7%; } /* First/Last Name */
+#pending .table th:nth-child(4), #pending .table td:nth-child(4) { width: 9%; } /* Type */
+#pending .table th:nth-child(5), #pending .table td:nth-child(5) { width: 10%; } /* Host */
+#pending .table th:nth-child(6), #pending .table td:nth-child(6) { width: 10%; } /* Department */
+#pending .table th:nth-child(7), #pending .table td:nth-child(7) { width: 12%; } /* Expected Time */
+#pending .table th:nth-child(8), #pending .table td:nth-child(8) { width: 15%; } /* Registered By */
+#pending .table th:nth-child(9), #pending .table td:nth-child(9) { width: 10%; } /* Actions */
 
 /* Table Hover Styles */
 .table-hover > tbody > tr:hover > * {
@@ -346,6 +396,45 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-block;
 }
 
+
+/* Pre-registered Visitors Button */
+.preregistered-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, #4a90e2, #5a9ee8);
+    color: white !important;
+    border: none;
+    box-shadow: 0 3px 8px rgba(74, 144, 226, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.preregistered-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.5);
+    background: linear-gradient(135deg, #3a80d2, #4a90e2);
+    color: white !important;
+}
+
+.preregistered-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
+}
+
+.dark-mode .preregistered-btn {
+    background: linear-gradient(135deg, #5e81ac, #81a1c1);
+    box-shadow: 0 3px 8px rgba(94, 129, 172, 0.4);
+    border: none;
+    color: white !important;
+}
+
+.dark-mode .preregistered-btn:hover {
+    background: linear-gradient(135deg, #4c71a4, #6c91b4);
+    box-shadow: 0 5px 15px rgba(94, 129, 172, 0.6);
+    color: white !important;
+}
 
 /* Badge Styles (Pill) */
 .badge {
@@ -446,7 +535,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Visitor Ticker Styles */
 .visitor-ticker {
-    background: linear-gradient(135deg, var(--status-info), #1a6b9e);
+    background: linear-gradient(135deg, #2980b9, #1a6b9e, #0056b3);
     color: white;
     padding: 0.75rem 0;
     overflow: hidden;
@@ -510,7 +599,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Dark mode ticker styles */
 .dark-mode .visitor-ticker {
-    background: linear-gradient(135deg, #5E81AC, #81A1C1);
+    background: linear-gradient(135deg, #5e81ac, #4c566a, #3b4252);
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -756,14 +845,33 @@ h1, h2, h3, h4, h5, h6 {
 
 .dark-mode .btn-primary {
     color: white !important;
-    background-color: var(--dark-btn-confirm) !important;
-    border-color: var(--dark-btn-confirm) !important;
+    background-color: #5e81ac !important; /* Nord blue color */
+    border-color: #5e81ac !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
 }
 .dark-mode .btn-primary:hover {
     filter: brightness(110%);
     color: white !important;
+    background-color: #4c71a4 !important; /* Darker blue on hover */
+    border-color: #4c71a4 !important;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow on hover */
+}
+
+/* Dark mode check-in button style */
+.dark-mode .checkin-btn {
+    color: white !important;
+    background-color: #a3be8c !important; /* Nord green color */
+    border-color: #a3be8c !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.dark-mode .checkin-btn:hover {
+    filter: brightness(110%);
+    color: white !important;
+    background-color: #93ae7c !important; /* Darker green on hover */
+    border-color: #93ae7c !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .dark-mode .btn-outline-danger {
@@ -1128,14 +1236,86 @@ form {
     background-color: var(--light-card-bg);
     border-radius: 12px;
     border: 1px solid var(--light-card-border);
+    max-height: calc(100vh - 60px);
+    overflow: hidden;
 }
 
 .modal-header {
     border-bottom: 1px solid var(--light-card-border);
 }
 
+.modal-body {
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+/* Hide the default Bootstrap close button */
 .modal-header .btn-close {
-    color: var(--light-text);
+    display: none;
+}
+
+.modal-footer .btn-danger {
+    background-color: var(--light-btn-cancel);
+    border-color: var(--light-btn-cancel);
+    color: white;
+}
+
+.modal-footer .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.dark-mode .modal-footer .btn-danger {
+    background-color: var(--dark-btn-cancel);
+    border-color: var(--dark-btn-cancel);
+    color: white;
+}
+
+.dark-mode .modal-footer .btn-danger:hover {
+    background-color: #a04048;
+    border-color: #a04048;
+}
+
+/* Make modal tables more spacious */
+.modal-body .table th,
+.modal-body .table td {
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+}
+
+/* Modal table column widths */
+.modal-body .table th:nth-child(1), 
+.modal-body .table td:nth-child(1) {
+    width: 25%; /* Name column - wider */
+}
+
+.modal-body .table th:nth-child(2), 
+.modal-body .table td:nth-child(2) {
+    width: 10%; /* Type column */
+}
+
+.modal-body .table th:nth-child(3), 
+.modal-body .table td:nth-child(3) {
+    width: 15%; /* Host column */
+}
+
+.modal-body .table th:nth-child(4), 
+.modal-body .table td:nth-child(4) {
+    width: 20%; /* Expected Time column */
+}
+
+.modal-body .table th:nth-child(5), 
+.modal-body .table td:nth-child(5) {
+    width: 20%; /* Registered By column */
+}
+
+.modal-body .table th:nth-child(6), 
+.modal-body .table td:nth-child(6) {
+    width: 10%; /* Actions column */
+}
+
+.modal-xl {
+    max-width: 90%;
 }
 
 .dark-mode .modal-content {
@@ -1150,6 +1330,105 @@ form {
 .dark-mode .modal-header .btn-close {
     color: var(--dark-text);
     filter: invert(1);
+}
+
+/* Tab Navigation Styles */
+.nav-tabs {
+    border-bottom: 1px solid var(--light-card-border);
+}
+
+.nav-tabs .nav-link {
+    color: var(--light-text);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: -1px;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--light-card-border) var(--light-card-border) transparent;
+    background-color: rgba(238, 232, 213, 0.5);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--light-heading-sub);
+    background-color: var(--light-card-bg);
+    border-color: var(--light-card-border) var(--light-card-border) var(--light-card-bg);
+    font-weight: 600;
+}
+
+/* Dark mode tab styles */
+.dark-mode .nav-tabs {
+    border-bottom-color: var(--dark-card-border);
+}
+
+.dark-mode .nav-tabs .nav-link {
+    color: var(--dark-text);
+}
+
+.dark-mode .nav-tabs .nav-link:hover {
+    border-color: var(--dark-card-border) var(--dark-card-border) transparent;
+    background-color: rgba(67, 76, 94, 0.5);
+}
+
+.dark-mode .nav-tabs .nav-link.active {
+    color: var(--dark-heading-sub);
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-card-border) var(--dark-card-border) var(--dark-card-bg);
+}
+
+/* Pending Badge Style */
+.badge.bg-info {
+    color: var(--status-info) !important;
+    border-color: var(--status-info) !important;
+    background-color: rgba(38, 139, 210, 0.1) !important;
+}
+
+.dark-mode .badge.bg-info {
+    color: var(--dark-status-info) !important;
+    border-color: var(--dark-status-info) !important;
+    background-color: rgba(136, 192, 208, 0.1) !important;
+}
+
+/* Late Visitor Styles */
+.visitor-late td {
+    color: var(--status-error) !important;
+    font-weight: 700;
+    background-color: rgba(220, 50, 47, 0.1) !important;
+}
+
+.dark-mode .visitor-late td {
+    color: var(--dark-status-error) !important;
+    font-weight: 700;
+    background-color: rgba(191, 97, 106, 0.2) !important;
+}
+
+/* Badge Styles for Info (Expected) */
+.badge.bg-info {
+    color: #0c5460 !important; /* Darker blue text for light mode */
+    border-color: var(--status-info) !important;
+    background-color: rgba(38, 139, 210, 0.1) !important;
+    font-weight: 700;
+}
+
+/* Pending count badge in tabs */
+.pending-count {
+    color: #000 !important; /* Black text for light mode */
+    font-weight: 700;
+}
+
+.dark-mode .pending-count {
+    color: #fff !important; /* White text for dark mode */
+}
+
+.dark-mode .badge.bg-info {
+    color: #d1ecf1 !important; /* Light blue text for dark mode */
+    border-color: var(--dark-status-info) !important;
+    background-color: rgba(136, 192, 208, 0.2) !important;
+    font-weight: 700;
 }
 
 /* Responsive adjustments */

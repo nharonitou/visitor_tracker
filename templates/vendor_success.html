@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom Vendor Portal Styles -->
+    <style>
+        :root {
+            --primary-blue: #0056b3;
+            --secondary-blue: #004494;
+            --light-blue: #e6f2ff;
+            --alert-red: #dc3545;
+            --success-green: #28a745;
+            --text-dark: #333;
+            --text-light: #fff;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            max-height: 40px;
+        }
+
+        .alert-banner {
+            background-color: var(--success-green);
+            color: white;
+            padding: 10px 0;
+        }
+
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+
+        .card-header {
+            background-color: var(--primary-blue);
+            color: white;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+            padding: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            border-color: var(--secondary-blue);
+        }
+
+        .footer {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: var(--success-green);
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-details {
+            background-color: var(--light-blue);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .confirmation-details h5 {
+            color: var(--primary-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            width: 40%;
+            color: var(--secondary-blue);
+        }
+
+        .detail-value {
+            width: 60%;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .confirmation-details {
+                background-color: white;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+
+    <title>Registration Confirmed - 1st Advantage</title>
+</head>
+
+<body>
+    <!-- Alert Banner -->
+    <div class="alert-banner no-print">
+        <div class="container d-flex align-items-center">
+            <i class="fas fa-check-circle me-2"></i>
+            <span>You have completed pre-check-in!</span>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light no-print">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="1st Advantage Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Return to Main Site</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Visit Registration Confirmation</h4>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3>Thank You, {{ visitor.GuestFirstName }}!</h3>
+                            <p class="lead">Your visit has been successfully pre-registered.</p>
+                            
+                            <div class="confirmation-details">
+                                <h5>Visit Details</h5>
+                                <div class="detail-row">
+                                    <div class="detail-label">Visitor Name:</div>
+                                    <div class="detail-value">{{ visitor.GuestFirstName }} {{ visitor.GuestLastName }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Company/Vendor:</div>
+                                    <div class="detail-value">{{ visitor.VendorName }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Visit Purpose:</div>
+                                    <div class="detail-value">{{ visitor.VisitorType }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Branch Location:</div>
+                                    <div class="detail-value">{{ visitor.Branch }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Department:</div>
+                                    <div class="detail-value">{{ visitor.DepartmentVisited }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Person to Visit:</div>
+                                    <div class="detail-value">{{ visitor.HostEmployeeName }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Scheduled Date/Time:</div>
+                                    <div class="detail-value">{{ scheduled_time.strftime('%m/%d/%Y %I:%M %p') }}</div>
+                                </div>
+                                {% if visitor.Comments %}
+                                <div class="detail-row">
+                                    <div class="detail-label">Additional Info:</div>
+                                    <div class="detail-value">{{ visitor.Comments }}</div>
+                                </div>
+                                {% endif %}
+                                <!-- Confirmation ID removed as requested -->
+                            </div>
+                            
+                            <div class="mt-4 no-print">
+                                <button class="btn btn-primary me-2" onclick="window.print()">
+                                    <i class="fas fa-print me-2"></i>Print Confirmation
+                                </button>
+                                <a href="{{ url_for('vendor_portal') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-plus me-2"></i>Register Another Visit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer no-print">
+        <div class="container text-center">
+            <span>&copy; {{ now.year if now else '2024' }} 1st Advantage Federal Credit Union</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

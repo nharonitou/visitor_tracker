@@ -1,15 +1,160 @@
 {% extends 'layout.html' %}
 
-{% block title %}New Visitor Check-in{% endblock %}
+{% block head_extra %}
+<style>
+    /* Hide the Vendor Check-In tab in the navigation */
+    .nav-item:has(a[href="{{ url_for('vendor_portal') }}"]) {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Check-in by Colleague{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Visitor Check-in</h2>
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <h2>Check-in by Colleague</h2>
+    <button type="button" class="btn btn-outline-primary preregistered-btn" data-bs-toggle="modal" data-bs-target="#pendingVisitorsModal">
+        <i class="fas fa-clipboard-list me-2"></i>Check-In Pre-registered Visitors
+    </button>
+</div>
+
+<!-- Pre-registered Visitors Modal -->
+<div class="modal fade" id="pendingVisitorsModal" tabindex="-1" aria-labelledby="pendingVisitorsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pendingVisitorsModalLabel">Pre-registered Visitors</h5>
+            </div>
+            <div class="modal-body">
+                {% if pending_visitors %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Host</th>
+                                <th>Expected Time</th>
+                                <th>Registered By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visitor in pending_visitors %}
+                            <tr>
+                                <td><strong>{{ visitor.GuestFirstName }} {{ visitor.GuestLastName }}</strong></td>
+                                <td>{{ visitor.VisitorType }}</td>
+                                <td>{{ visitor.HostEmployeeName }}</td>
+                                <td>{{ visitor.AdvanceCheckInTime.strftime('%m/%d/%Y %I:%M %p') if visitor.AdvanceCheckInTime else 'N/A' }}</td>
+                                <td>{{ visitor.ColleagueFirstName }} {{ visitor.ColleagueLastName }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#checkinModal{{ visitor.VisitorID }}" data-bs-dismiss="modal">
+                                        Check In
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center fst-italic py-4">No pre-registered visitors found.</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Individual Check-in Modals -->
+{% if pending_visitors %}
+    {% for visitor in pending_visitors %}
+    <div class="modal fade" id="checkinModal{{ visitor.VisitorID }}" tabindex="-1" aria-labelledby="checkinModalLabel{{ visitor.VisitorID }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="checkinModalLabel{{ visitor.VisitorID }}">Check In {{ visitor.GuestFirstName }} {{ visitor.GuestLastName }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('checkin_pending', visitor_id=visitor.VisitorID) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="badge_number{{ visitor.VisitorID }}" class="form-label">Assign Badge Number</label>
+                            <select class="form-select" id="badge_number{{ visitor.VisitorID }}" name="badge_number" required>
+                                <option value="" disabled selected>Select Badge...</option>
+                                <option value="No Badge">No badge, being escorted</option>
+                                {% for badge in badge_numbers %}
+                                <option value="{{ badge }}">{{ badge }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Complete Check-In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
 
 <!-- New visual wrapper for form (elevated card) -->
 <div class="card p-4 shadow-sm rounded-3 border-0">
     <form method="POST" action="{{ url_for('visitor_form') }}">
         {# CSRF token removed intentionally #}
 
+        <!-- Check-in Type Selection -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="check_in_type" id="immediate_check_in" value="immediate" checked>
+                    <label class="form-check-label" for="immediate_check_in">Check In Now</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="check_in_type" id="advanced_check_in" value="advanced">
+                    <label class="form-check-label" for="advanced_check_in">Advanced Check-In</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Check-in Fields (initially hidden) -->
+        <div id="advanced_fields" class="mb-4" style="display: none;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="scheduled_date" class="form-label">Scheduled Visit Date <span class="text-danger">*</span></label>
+                    <input type="datetime-local" class="form-control" id="scheduled_date" name="advance_checkin_time">
+                </div>
+                <div class="col-md-6">
+                    <label for="colleague_type" class="form-label">Registering As <span class="text-danger">*</span></label>
+                    <select class="form-select" id="colleague_type" name="colleague_type">
+                        <option value="employee" selected>Employee</option>
+                        <option value="vendor">Vendor</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="colleague_first_name" class="form-label">Your First Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="colleague_first_name" name="colleague_first_name">
+                </div>
+                <div class="col-md-6">
+                    <label for="colleague_last_name" class="form-label">Your Last Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="colleague_last_name" name="colleague_last_name">
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitor Information -->
+        <h5 class="mb-3">Visitor Information</h5>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="guest_first_name" class="form-label">Guest First Name <span class="text-danger">*</span></label>
@@ -62,6 +207,7 @@
                 <label for="badge_number" class="form-label">Badge Number Assigned <span class="text-danger">*</span></label>
                 <select class="form-select" id="badge_number" name="badge_number" required>
                     <option value="" disabled {% if not visitor.BadgeNumber %}selected{% endif %}>Select Badge...</option>
+                    <option value="No Badge" {% if visitor.BadgeNumber == "No Badge" %}selected{% endif %}>No badge, being escorted</option>
                     {% for badge in badge_numbers %}
                     <option value="{{ badge }}" {% if visitor.BadgeNumber == badge %}selected{% endif %}>{{ badge }}</option>
                     {% endfor %}
@@ -84,4 +230,34 @@
         <small class="ms-2">Fields marked with <span class="text-danger">*</span> are required.</small>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get elements
+        const immediateCheckIn = document.getElementById('immediate_check_in');
+        const advancedCheckIn = document.getElementById('advanced_check_in');
+        const advancedFields = document.getElementById('advanced_fields');
+        const badgeField = document.getElementById('badge_number').closest('.col-md-6');
+        
+        // Function to toggle advanced fields visibility
+        function toggleAdvancedFields() {
+            if (advancedCheckIn.checked) {
+                advancedFields.style.display = 'block';
+                badgeField.style.display = 'none'; // Hide badge field for advanced check-in
+            } else {
+                advancedFields.style.display = 'none';
+                badgeField.style.display = 'block'; // Show badge field for immediate check-in
+            }
+        }
+        
+        // Add event listeners
+        immediateCheckIn.addEventListener('change', toggleAdvancedFields);
+        advancedCheckIn.addEventListener('change', toggleAdvancedFields);
+        
+        // Initial state
+        toggleAdvancedFields();
+    });
+</script>
 {% endblock %}

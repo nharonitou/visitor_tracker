@@ -1,0 +1,64 @@
+{% extends 'layout_advanced.html' %}
+
+{% block title %}Advanced Check-In{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h2 class="mb-5">Advanced Check-In</h2>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 p-4 shadow-sm rounded-3 border-0 option-card">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title mb-4">As Employee</h3>
+                    <p class="card-text flex-grow-1">Use this option if you are an employee pre-registering a visitor. You'll be able to enter visitor details for their upcoming visit.</p>
+                    <div class="mt-4">
+                        <a href="{{ url_for('advanced_checkin_employee') }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-user-tie me-2"></i>Continue as Employee
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-5 mb-4">
+            <div class="card h-100 p-4 shadow-sm rounded-3 border-0 option-card">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title mb-4">As Vendor</h3>
+                    <p class="card-text flex-grow-1">Use this option if you are a vendor pre-registering your visit. You'll be able to provide details about your upcoming visit.</p>
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-secondary btn-lg w-100 disabled">
+                            <i class="fas fa-truck me-2"></i>Coming Soon
+                        </a>
+                        <small class="text-muted mt-2 d-block">This feature is under development</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Main Menu
+        </a>
+    </div>
+</div>
+
+<style>
+    .option-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .option-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block scripts_extra %}{% endblock %}

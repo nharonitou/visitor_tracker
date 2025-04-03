@@ -1,0 +1,114 @@
+{% extends 'layout_advanced.html' %}
+
+{% block title %}Advanced Check-In (Employee){% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Advanced Visitor Check-in</h2>
+
+<div class="card p-4 shadow-sm rounded-3 border-0">
+    <form method="POST" action="{{ url_for('advanced_checkin_employee') }}">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> You are pre-registering a visitor. They will be checked in when they arrive.
+        </div>
+
+        <h4 class="mb-3">Visitor Information</h4>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="guest_first_name" class="form-label">Guest First Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="guest_first_name" name="guest_first_name" value="{{ visitor.GuestFirstName or '' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="guest_last_name" class="form-label">Guest Last Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="guest_last_name" name="guest_last_name" value="{{ visitor.GuestLastName or '' }}" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="visitor_type" class="form-label">Visitor Type <span class="text-danger">*</span></label>
+            <select class="form-select" id="visitor_type" name="visitor_type" required>
+                <option value="" disabled {% if not visitor.VisitorType %}selected{% endif %}>Select Type...</option>
+                {% for type in visitor_types %}
+                <option value="{{ type }}" {% if visitor.VisitorType == type %}selected{% endif %}>{{ type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="vendor_name" class="form-label">Vendor Name (if applicable)</label>
+            <input type="text" class="form-control" id="vendor_name" name="vendor_name" value="{{ visitor.VendorName or '' }}">
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="branch" class="form-label">Branch <span class="text-danger">*</span></label>
+                <select class="form-select" id="branch" name="branch" required>
+                    <option value="" disabled {% if not visitor.Branch %}selected{% endif %}>Select Branch...</option>
+                    {% for branch in branches %}
+                    <option value="{{ branch }}" {% if visitor.Branch == branch %}selected{% endif %}>{{ branch }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="department" class="form-label">Department Visiting <span class="text-danger">*</span></label>
+                <select class="form-select" id="department" name="department" required>
+                    <option value="" disabled {% if not visitor.DepartmentVisited %}selected{% endif %}>Select Department...</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if visitor.DepartmentVisited == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="here_to_see" class="form-label">Here to See <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="here_to_see" name="here_to_see" placeholder="Employee Name" value="{{ visitor.HostEmployeeName or '' }}" required>
+        </div>
+
+        <h4 class="mb-3 mt-4">Colleague Information</h4>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="colleague_first_name" class="form-label">Your First Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="colleague_first_name" name="colleague_first_name" value="{{ visitor.ColleagueFirstName or '' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="colleague_last_name" class="form-label">Your Last Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="colleague_last_name" name="colleague_last_name" value="{{ visitor.ColleagueLastName or '' }}" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="advance_checkin_time" class="form-label">Expected Check-in Time <span class="text-danger">*</span></label>
+            <input type="datetime-local" class="form-control" id="advance_checkin_time" name="advance_checkin_time" value="{{ visitor.AdvanceCheckInTime or '' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea class="form-control" id="comments" name="comments" rows="3">{{ visitor.Comments or '' }}</textarea>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('advanced_checkin') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-calendar-check me-1"></i>Submit Advanced Check-In
+            </button>
+        </div>
+        <small class="ms-2 mt-2 d-block">Fields marked with <span class="text-danger">*</span> are required.</small>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // Set default value for datetime-local input to current time
+    document.addEventListener('DOMContentLoaded', function() {
+        const datetimeInput = document.getElementById('advance_checkin_time');
+        if (datetimeInput && !datetimeInput.value) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            datetimeInput.value = now.toISOString().slice(0, 16);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,71 +1,331 @@
 {% extends 'layout.html' %}
 
+{% block head_extra %}
+<style>
+    /* Hide the Vendor Check-In tab in the navigation */
+    .nav-item:has(a[href="{{ url_for('vendor_portal') }}"]) {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
 {% block title %}Visitor Records{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Visitor Log</h2>
-
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Type</th>
-                <th>Host</th>
-                <th>Department</th>
-                <th>Branch</th>
-                <th>Badge</th>
-                <th>Check-In Time</th>
-                <th>Check-Out Time</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if visitors %}
-                {% for visitor in visitors %}
-                <tr>
-                    <td>{{ visitor.VisitorID }}</td>
-                    <td>{{ visitor.GuestFirstName }}</td>
-                    <td>{{ visitor.GuestLastName }}</td>
-                    <td>{{ visitor.VisitorType }}</td>
-                    <td>{{ visitor.HostEmployeeName }}</td>
-                    <td>{{ visitor.DepartmentVisited }}</td>
-                    <td>{{ visitor.Branch }}</td>
-                    <td>{{ visitor.BadgeNumber }}</td>
-                    <td style="text-align: center;">{{ visitor.CheckInTime.strftime('%m/%d/%Y %I:%M %p') if visitor.CheckInTime else 'N/A' }}</td>
-                    <td style="text-align: center;">{{ visitor.CheckOutTime.strftime('%m/%d/%Y %I:%M %p') if visitor.CheckOutTime else 'N/A' }}</td>
-                    <td style="text-align: center;">
-                        <span class="badge 
-                            {% if visitor.Status == 'CheckedIn' %}bg-success
-                            {% elif visitor.Status == 'CheckedOut' %}bg-secondary
-                            {% else %}bg-warning{% endif %}">
-                            {{ 'Checked In' if visitor.Status == 'CheckedIn' else 'Checked Out' }}
-                        </span>
-                    </td>
-                    <td style="text-align: center;">
-                        {% if visitor.Status == 'CheckedIn' %}
-                        <form action="{{ url_for('checkout', visitor_id=visitor.VisitorID) }}" method="POST" class="checkout-form">
-                            <button type="submit" class="btn btn-outline-danger checkout-btn" title="Check Out {{ visitor.GuestFirstName }}">
-                                Out
-                            </button>
-                        </form>
-                        {% else %}
-                        <!-- Leave empty for checked out visitors -->
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            {% else %}
-            <tr>
-                <td colspan="12" class="text-center fst-italic py-4">
-                    No visitor records found.
-                </td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <h2>Visitor Log</h2>
+    <ul class="nav nav-tabs" id="recordsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="current-tab" data-bs-toggle="tab" data-bs-target="#current" type="button" role="tab" aria-controls="current" aria-selected="true">Current Visitors</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-controls="recent" aria-selected="false">Recent Visitors</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="false">
+                Pending Visitors
+                {% if pending_visitors %}
+                <span class="badge bg-danger ms-2 pending-count">{{ pending_visitors|length }}</span>
+                {% endif %}
+            </button>
+        </li>
+    </ul>
 </div>
+
+<div class="tab-content" id="recordsTabContent">
+    <!-- Current Visitors Tab - Only shows checked-in visitors and today's pending visitors -->
+    <div class="tab-pane fade show active" id="current" role="tabpanel" aria-labelledby="current-tab">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Type</th>
+                        <th>Host</th>
+                        <th>Department</th>
+                        <th>Branch</th>
+                        <th>Badge</th>
+                        <th>Check-In Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- First show checked-in visitors -->
+                    {% set found_visitors = false %}
+                    {% if visitors %}
+                        {% for visitor in visitors %}
+                            {% if visitor.Status == 'CheckedIn' %}
+                            {% set found_visitors = true %}
+                            <tr>
+                                <td>{{ visitor.VisitorID }}</td>
+                                <td><strong>{{ visitor.GuestFirstName }}</strong></td>
+                                <td><strong>{{ visitor.GuestLastName }}</strong></td>
+                                <td>{{ visitor.VisitorType }}</td>
+                                <td>{{ visitor.HostEmployeeName }}</td>
+                                <td>{{ visitor.DepartmentVisited }}</td>
+                                <td>{{ visitor.Branch }}</td>
+                                <td>{{ visitor.BadgeNumber }}</td>
+                                <td style="text-align: center;">{{ visitor.CheckInTime.strftime('%m/%d/%Y %I:%M %p') if visitor.CheckInTime else 'N/A' }}</td>
+                                <td style="text-align: center;">
+                                    <span class="badge bg-success">Checked In</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <form action="{{ url_for('checkout', visitor_id=visitor.VisitorID) }}" method="POST" class="checkout-form">
+                                        <button type="submit" class="btn btn-outline-danger checkout-btn" title="Check Out {{ visitor.GuestFirstName }}">
+                                            Out
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Then show today's pending visitors -->
+                    {% if pending_visitors %}
+                        {% for visitor in pending_visitors %}
+                            {% if visitor.AdvanceCheckInTime and visitor.AdvanceCheckInTime.date() == now.date() %}
+                            {% set found_visitors = true %}
+                            <tr class="{% if visitor.AdvanceCheckInTime < now %}visitor-late{% endif %}">
+                                <td>{{ visitor.VisitorID }}</td>
+                                <td><strong>{{ visitor.GuestFirstName }}</strong></td>
+                                <td><strong>{{ visitor.GuestLastName }}</strong></td>
+                                <td>{{ visitor.VisitorType }}</td>
+                                <td>{{ visitor.HostEmployeeName }}</td>
+                                <td>{{ visitor.DepartmentVisited }}</td>
+                                <td>{{ visitor.Branch }}</td>
+                                <td>Pending</td>
+                                <td style="text-align: center;">{{ visitor.AdvanceCheckInTime.strftime('%I:%M %p') }}</td>
+                                <td style="text-align: center;">
+                                    <span class="badge bg-info">Expected</span>
+                                </td>
+                            <td style="text-align: center;">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkinModal{{ visitor.VisitorID }}">
+                                    Check In
+                                </button>
+                                
+                                <!-- Check-in Modal -->
+                                <div class="modal fade" id="checkinModal{{ visitor.VisitorID }}" tabindex="-1" aria-labelledby="checkinModalLabel{{ visitor.VisitorID }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="checkinModalLabel{{ visitor.VisitorID }}">Check In {{ visitor.GuestFirstName }} {{ visitor.GuestLastName }}</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ url_for('checkin_pending', visitor_id=visitor.VisitorID) }}" method="POST">
+                                                    <div class="mb-3">
+                                                        <label for="badge_number{{ visitor.VisitorID }}" class="form-label">Assign Badge Number</label>
+                                                        <select class="form-select" id="badge_number{{ visitor.VisitorID }}" name="badge_number" required>
+                                                            <option value="" disabled selected>Select Badge...</option>
+                                                            <option value="No Badge">No badge, being escorted</option>
+                                                            {% for badge in badge_numbers %}
+                                                            <option value="{{ badge }}">{{ badge }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="d-grid">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="fas fa-sign-in-alt me-2"></i>Complete Check-In
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Empty state message removed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Recent Visitors Tab - Shows the 10 most recent visitors -->
+    <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Type</th>
+                        <th>Host</th>
+                        <th>Department</th>
+                        <th>Branch</th>
+                        <th>Badge</th>
+                        <th>Check-In Time</th>
+                        <th>Check-Out Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if visitors %}
+                        {% set counter = 0 %}
+                        {% for visitor in visitors %}
+                            {% if counter < 10 %}
+                                {% set counter = counter + 1 %}
+                                <tr>
+                                    <td>{{ visitor.VisitorID }}</td>
+                                    <td><strong>{{ visitor.GuestFirstName }}</strong></td>
+                                    <td><strong>{{ visitor.GuestLastName }}</strong></td>
+                                    <td>{{ visitor.VisitorType }}</td>
+                                    <td>{{ visitor.HostEmployeeName }}</td>
+                                    <td>{{ visitor.DepartmentVisited }}</td>
+                                    <td>{{ visitor.Branch }}</td>
+                                    <td>{{ visitor.BadgeNumber }}</td>
+                                    <td style="text-align: center;">{{ visitor.CheckInTime.strftime('%m/%d/%Y %I:%M %p') if visitor.CheckInTime else 'N/A' }}</td>
+                                    <td style="text-align: center;">{{ visitor.CheckOutTime.strftime('%m/%d/%Y %I:%M %p') if visitor.CheckOutTime else 'N/A' }}</td>
+                                    <td style="text-align: center;">
+                                        <span class="badge 
+                                            {% if visitor.Status == 'CheckedIn' %}bg-success
+                                            {% elif visitor.Status == 'CheckedOut' %}bg-secondary
+                                            {% elif visitor.Status == 'Pending' %}bg-info
+                                            {% else %}bg-warning{% endif %}">
+                                            {% if visitor.Status == 'CheckedIn' %}Checked In
+                                            {% elif visitor.Status == 'CheckedOut' %}Checked Out
+                                            {% elif visitor.Status == 'Pending' %}Pending
+                                            {% else %}{{ visitor.Status }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        {% if visitor.Status == 'CheckedIn' %}
+                                        <form action="{{ url_for('checkout', visitor_id=visitor.VisitorID) }}" method="POST" class="checkout-form">
+                                            <button type="submit" class="btn btn-outline-danger checkout-btn" title="Check Out {{ visitor.GuestFirstName }}">
+                                                Out
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <!-- Leave empty for checked out visitors -->
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="12" class="text-center fst-italic py-4">
+                            No visitor records found.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pending Visitors Tab -->
+    <div class="tab-pane fade" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Type</th>
+                        <th>Host</th>
+                        <th>Department</th>
+                        <th>Expected Time</th>
+                        <th>Registered By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if pending_visitors %}
+                        {% for visitor in pending_visitors %}
+                        <tr>
+                            <td>{{ visitor.VisitorID }}</td>
+                            <td><strong>{{ visitor.GuestFirstName }}</strong></td>
+                            <td><strong>{{ visitor.GuestLastName }}</strong></td>
+                            <td>{{ visitor.VisitorType }}</td>
+                            <td>{{ visitor.HostEmployeeName }}</td>
+                            <td>{{ visitor.DepartmentVisited }}</td>
+                            <td style="text-align: center;">{{ visitor.AdvanceCheckInTime.strftime('%m/%d/%Y %I:%M %p') if visitor.AdvanceCheckInTime else 'N/A' }}</td>
+                            <td>{{ visitor.ColleagueFirstName }} {{ visitor.ColleagueLastName }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center fst-italic py-4">
+                            No pending visitors found.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        
+        // Check for late visitors in the pending visitors tab
+        const pendingRows = document.querySelectorAll('#pending tbody tr');
+        pendingRows.forEach(row => {
+            // Get the expected time cell (7th column, index 6)
+            const expectedTimeCell = row.cells[6];
+            if (expectedTimeCell) {
+                const expectedTimeText = expectedTimeCell.textContent.trim();
+                if (expectedTimeText !== 'N/A') {
+                    // Parse the date from format MM/DD/YYYY HH:MM AM/PM
+                    const expectedTime = new Date(expectedTimeText);
+                    
+                    // If expected time is in the past, mark as late
+                    if (expectedTime < now) {
+                        row.classList.add('visitor-late');
+                    }
+                }
+            }
+        });
+        
+        // Check for late visitors in the current visitors tab
+        const currentRows = document.querySelectorAll('#current tbody tr');
+        currentRows.forEach(row => {
+            // Check if this is a pending visitor (has "Expected" badge)
+            const statusCell = row.cells[9]; // Status is in column 10 (index 9)
+            if (statusCell && statusCell.textContent.trim().includes('Expected')) {
+                // Get the check-in time cell (9th column, index 8)
+                const timeCell = row.cells[8];
+                if (timeCell) {
+                    // For current tab, we only show the time (HH:MM AM/PM)
+                    // We need to create a date object with today's date and the time
+                    const timeText = timeCell.textContent.trim();
+                    if (timeText !== 'N/A') {
+                        // Create a date with today's date and the time from the cell
+                        const today = new Date();
+                        const [time, period] = timeText.split(' ');
+                        const [hours, minutes] = time.split(':');
+                        
+                        let hour = parseInt(hours);
+                        if (period === 'PM' && hour < 12) hour += 12;
+                        if (period === 'AM' && hour === 12) hour = 0;
+                        
+                        today.setHours(hour, parseInt(minutes), 0, 0);
+                        
+                        // If expected time is in the past, mark as late
+                        if (today < now) {
+                            row.classList.add('visitor-late');
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
