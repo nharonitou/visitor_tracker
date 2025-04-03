@@ -27,3 +27,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# run files
+deploy.sh
+run_with_nohup.sh
