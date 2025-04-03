@@ -1,6 +1,6 @@
 # Visitor Tracker Application
 
-A Flask web application for tracking visitors at 1st Advantage Federal Credit Union.
+A Flask web application for tracking visitors.
 
 ## Administrator Guide
 

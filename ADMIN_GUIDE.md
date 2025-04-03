@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Visitor Tracker is a Flask-based web application that tracks visitors. It allows staff to check in visitors, record their details, and check them out when they leave. The application is hosted on `matrix.1stadvantage.org:8080`.
+The Visitor Tracker is a Flask-based web application that tracks visitors. It allows staff to check in visitors, record their details, and check them out when they leave. 
 
 ## Application Structure
 
