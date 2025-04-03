@@ -1073,4 +1073,90 @@ form {
     display: inline;
 }
 
+/* Export Button Styles */
+.export-button-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.export-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--light-btn-view);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.export-btn i {
+    font-size: 1.2rem;
+}
+
+.export-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    background-color: var(--light-btn-view);
+    color: white;
+}
+
+.dark-mode .export-btn {
+    background-color: var(--dark-btn-view);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.dark-mode .export-btn:hover {
+    background-color: var(--dark-btn-view);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Styles */
+.modal-content {
+    background-color: var(--light-card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--light-card-border);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--light-card-border);
+}
+
+.modal-header .btn-close {
+    color: var(--light-text);
+}
+
+.dark-mode .modal-content {
+    background-color: var(--dark-card-bg);
+    border: 1px solid var(--dark-card-border);
+}
+
+.dark-mode .modal-header {
+    border-bottom: 1px solid var(--dark-card-border);
+}
+
+.dark-mode .modal-header .btn-close {
+    color: var(--dark-text);
+    filter: invert(1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .export-button-container {
+        bottom: 15px;
+        left: 15px;
+    }
+    
+    .export-btn {
+        width: 45px;
+        height: 45px;
+    }
+}
+
 /* This section was removed to eliminate duplicate styles */

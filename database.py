@@ -189,6 +189,47 @@ def get_all_visitors():
             conn.close()
 
 
+def get_visitors_by_date_range(start_date, end_date):
+    """Retrieves visitor records within a specified date range."""
+    conn = create_connection()
+    if not conn:
+        return None, "Database connection failed"
+
+    cursor = conn.cursor()
+    visitors = []
+    sql = f"""
+        SELECT
+            VisitorID, GuestFirstName, GuestLastName, VisitorType, Branch, DepartmentVisited,
+            VendorName, BadgeNumber, HostEmployeeName, Comments,
+            CheckInTime, CheckOutTime, Status
+        FROM {DB_TABLE}
+        WHERE CheckInTime BETWEEN ? AND ?
+        ORDER BY CheckInTime DESC
+    """
+    params = (start_date, end_date)
+    
+    try:
+        cursor.execute(sql, params)
+        # Get column names from cursor description
+        columns = [column[0] for column in cursor.description]
+        # Fetch rows and convert to list of dictionaries
+        visitors = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        logging.info(f"Retrieved {len(visitors)} visitor records between {start_date} and {end_date}.")
+        return visitors, None
+    except pyodbc.Error as ex:
+        sqlstate = ex.args[0]
+        message = ex.args[1]
+        logging.error(f"Failed to retrieve visitors by date range. SQLSTATE: {sqlstate} Message: {message}")
+        return None, f"Database error: {message}"
+    except Exception as e:
+        logging.error(f"An unexpected error occurred while fetching visitors by date range: {str(e)}")
+        return None, f"An unexpected error occurred: {str(e)}"
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 def checkout_visitor(visitor_id):
     """Updates a visitor's status to 'CheckedOut' and sets the CheckOutTime."""
     conn = create_connection()

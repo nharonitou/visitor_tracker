@@ -1,9 +1,11 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 import os
 import logging
+import csv
+import io
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Import database functions and the new notifications function
 import database
@@ -156,6 +158,85 @@ def checkout(visitor_id):
         flash(f'Error checking out: {message}', 'warning') # Use warning as it might not be a critical db error
 
     return redirect(url_for('view_records')) # Redirect back to the records page
+
+@app.route('/export-csv', methods=['POST'])
+def export_csv():
+    """Exports visitor records to CSV based on date range."""
+    try:
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        
+        if not start_date or not end_date:
+            flash('Please provide both start and end dates', 'warning')
+            return redirect(url_for('view_records'))
+        
+        # Convert string dates to datetime objects
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        
+        # Add one day to end_date to include the entire end date
+        end_date = end_date + timedelta(days=1)
+        
+        # Get records within date range
+        visitors, error = database.get_visitors_by_date_range(start_date, end_date)
+        
+        if error:
+            logging.error(f"Error retrieving records for export: {error}")
+            flash(f"Error retrieving records: {error}", 'danger')
+            return redirect(url_for('view_records'))
+        
+        if not visitors:
+            flash("No records found in the selected date range", 'warning')
+            return redirect(url_for('view_records'))
+        
+        # Create CSV in memory
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header row
+        header = [
+            'Visitor ID', 'First Name', 'Last Name', 'Type', 'Host', 
+            'Department', 'Branch', 'Badge', 'Check-In Time', 
+            'Check-Out Time', 'Status', 'Vendor Name', 'Comments'
+        ]
+        writer.writerow(header)
+        
+        # Write data rows
+        for visitor in visitors:
+            check_in_time = visitor['CheckInTime'].strftime('%m/%d/%Y %I:%M %p') if visitor['CheckInTime'] else 'N/A'
+            check_out_time = visitor['CheckOutTime'].strftime('%m/%d/%Y %I:%M %p') if visitor['CheckOutTime'] else 'N/A'
+            
+            row = [
+                visitor['VisitorID'],
+                visitor['GuestFirstName'],
+                visitor['GuestLastName'],
+                visitor['VisitorType'],
+                visitor['HostEmployeeName'],
+                visitor['DepartmentVisited'],
+                visitor['Branch'],
+                visitor['BadgeNumber'],
+                check_in_time,
+                check_out_time,
+                'Checked In' if visitor['Status'] == 'CheckedIn' else 'Checked Out',
+                visitor['VendorName'] or 'N/A',
+                visitor['Comments'] or 'N/A'
+            ]
+            writer.writerow(row)
+        
+        # Prepare response
+        output.seek(0)
+        filename = f"visitor_records_{start_date.strftime('%Y%m%d')}_to_{(end_date - timedelta(days=1)).strftime('%Y%m%d')}.csv"
+        
+        return Response(
+            output.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename={filename}"}
+        )
+        
+    except Exception as e:
+        logging.error(f"Error exporting CSV: {str(e)}")
+        flash(f"Error exporting CSV: {str(e)}", 'danger')
+        return redirect(url_for('view_records'))
 
 # --- Run the App ---
 if __name__ == '__main__':

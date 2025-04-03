@@ -90,6 +90,44 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Export Button -->
+    <div class="export-button-container">
+        <button id="export-button" class="btn export-btn" title="Export Records">
+            <i class="fas fa-file-export"></i>
+        </button>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export Visitor Records</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="export-form" action="{{ url_for('export_csv') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   min="2025-04-01" max="2035-04-01" value="2025-04-01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   min="2025-04-01" max="2035-04-01" value="2035-04-01" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i>Export CSV
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer mt-auto py-3 border-top">
         <div class="container text-center">
@@ -106,6 +144,38 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    
+    <!-- Export Button Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const exportBtn = document.getElementById('export-button');
+            const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+            
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    exportModal.show();
+                });
+            }
+            
+            // Validate date range
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('end_date');
+            const exportForm = document.getElementById('export-form');
+            
+            if (exportForm) {
+                exportForm.addEventListener('submit', function(e) {
+                    const startDate = new Date(startDateInput.value);
+                    const endDate = new Date(endDateInput.value);
+                    
+                    if (startDate > endDate) {
+                        e.preventDefault();
+                        alert('Start date must be before end date');
+                    }
+                });
+            }
+        });
+    </script>
+    
     {% block scripts_extra %}{% endblock %}
 </body>
 </html>
