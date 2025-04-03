@@ -1,0 +1,14 @@
+[Unit]
+Description=Visitor Tracker Flask Application
+After=network.target
+
+[Service]
+User=zebra
+WorkingDirectory=/home/zebra/visitor_tracker
+ExecStart=/home/zebra/visitor_tracker/.venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8080 wsgi:app
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

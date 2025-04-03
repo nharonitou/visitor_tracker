@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+
+{% block title %}Visitor Records{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Visitor Log</h2> <!-- Added margin bottom -->
+<div class="table-responsive">
+    <!-- table-striped and table-hover styles are handled by theme.css -->
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Type</th>
+                <th>Host</th>
+                <th>Department</th>
+                <th>Branch</th>
+                <th>Badge</th>
+                <th>Check-In Time</th>
+                <th>Check-Out Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if visitors %}
+                {% for visitor in visitors %}
+                <tr>
+                    <td>{{ visitor.VisitorID }}</td>
+                    <td>{{ visitor.GuestFirstName }}</td>
+                    <td>{{ visitor.GuestLastName }}</td>
+                    <td>{{ visitor.VisitorType }}</td>
+                    <td>{{ visitor.HostEmployeeName }}</td>
+                    <td>{{ visitor.DepartmentVisited }}</td>
+                    <td>{{ visitor.Branch }}</td>
+                    <td>{{ visitor.BadgeNumber }}</td>
+                    <!-- Format dates in a more user-friendly way -->
+                    <td>{{ visitor.CheckInTime.strftime('%b %d, %Y at %I:%M %p') if visitor.CheckInTime else 'N/A' }}</td>
+                    <td>{{ visitor.CheckOutTime.strftime('%b %d, %Y at %I:%M %p') if visitor.CheckOutTime else 'N/A' }}</td>
+                    <td>
+                        <!-- Badge styles are handled by theme.css overrides -->
+                         <span class="badge {% if visitor.Status == 'CheckedIn' %}bg-success{% elif visitor.Status == 'CheckedOut' %}bg-secondary{% else %}bg-warning{% endif %}">
+                            {{ 'Checked In' if visitor.Status == 'CheckedIn' else 'Checked Out' }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if visitor.Status == 'CheckedIn' %}
+                        <form action="{{ url_for('checkout', visitor_id=visitor.VisitorID) }}" method="POST" style="display: inline;">
+                             {# CSRF token removed as Flask-WTF Form object isn't used #}
+                             <!-- Button style handled by theme.css, btn-sm removed -->
+                            <button type="submit" class="btn btn-outline-danger" title="Check Out {{ visitor.GuestFirstName }}">
+                                <i class="fas fa-sign-out-alt"></i> <!-- Icon -->
+                                <span class="d-none d-md-inline ms-1">Check Out</span> <!-- Text hidden on small screens -->
+                            </button>
+                        </form>
+                        {% else %}
+                         <!-- Added action-text-muted class for specific styling -->
+                         <span class="action-text-muted">Checked Out</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="12" class="text-center fst-italic py-4">No visitor records found.</td> <!-- Styled message for no records -->
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

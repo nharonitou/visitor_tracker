@@ -1,0 +1,6 @@
+Flask 
+pyodbc 
+python-dotenv
+datetime
+requests
+gunicorn
