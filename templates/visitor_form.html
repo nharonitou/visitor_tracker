@@ -3,80 +3,85 @@
 {% block title %}New Visitor Check-in{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Visitor Check-in</h2> <!-- Added margin bottom to heading -->
-<form method="POST" action="{{ url_for('visitor_form') }}">
-    {# REMOVED: {{ form.csrf_token }} - Not using Flask-WTF form object here #}
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="guest_first_name" class="form-label">Guest First Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="guest_first_name" name="guest_first_name" value="{{ visitor.GuestFirstName or '' }}" required>
+<h2 class="mb-4">Visitor Check-in</h2>
+
+<!-- New visual wrapper for form (elevated card) -->
+<div class="card p-4 shadow-sm rounded-3 border-0">
+    <form method="POST" action="{{ url_for('visitor_form') }}">
+        {# CSRF token removed intentionally #}
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="guest_first_name" class="form-label">Guest First Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="guest_first_name" name="guest_first_name" value="{{ visitor.GuestFirstName or '' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="guest_last_name" class="form-label">Guest Last Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="guest_last_name" name="guest_last_name" value="{{ visitor.GuestLastName or '' }}" required>
+            </div>
         </div>
-        <div class="col-md-6">
-            <label for="guest_last_name" class="form-label">Guest Last Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="guest_last_name" name="guest_last_name" value="{{ visitor.GuestLastName or '' }}" required>
-        </div>
-    </div>
 
-    <div class="mb-3">
-        <label for="visitor_type" class="form-label">Visitor Type <span class="text-danger">*</span></label>
-        <select class="form-select" id="visitor_type" name="visitor_type" required>
-            <option value="" disabled {% if not visitor.VisitorType %}selected{% endif %}>Select Type...</option>
-            {% for type in visitor_types %}
-            <option value="{{ type }}" {% if visitor.VisitorType == type %}selected{% endif %}>{{ type }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-     <div class="mb-3">
-        <label for="vendor_name" class="form-label">Vendor Name (if applicable)</label>
-        <input type="text" class="form-control" id="vendor_name" name="vendor_name" value="{{ visitor.VendorName or '' }}">
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="branch" class="form-label">Branch <span class="text-danger">*</span></label>
-            <select class="form-select" id="branch" name="branch" required>
-                <option value="" disabled {% if not visitor.Branch %}selected{% endif %}>Select Branch...</option>
-                {% for branch in branches %}
-                <option value="{{ branch }}" {% if visitor.Branch == branch %}selected{% endif %}>{{ branch }}</option>
+        <div class="mb-3">
+            <label for="visitor_type" class="form-label">Visitor Type <span class="text-danger">*</span></label>
+            <select class="form-select" id="visitor_type" name="visitor_type" required>
+                <option value="" disabled {% if not visitor.VisitorType %}selected{% endif %}>Select Type...</option>
+                {% for type in visitor_types %}
+                <option value="{{ type }}" {% if visitor.VisitorType == type %}selected{% endif %}>{{ type }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-6">
-            <label for="department" class="form-label">Department Visiting <span class="text-danger">*</span></label>
-            <select class="form-select" id="department" name="department" required>
-                 <option value="" disabled {% if not visitor.DepartmentVisited %}selected{% endif %}>Select Department...</option>
-                {% for dept in departments %}
-                <option value="{{ dept }}" {% if visitor.DepartmentVisited == dept %}selected{% endif %}>{{ dept }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-             <label for="badge_number" class="form-label">Badge Number Assigned <span class="text-danger">*</span></label>
-            <select class="form-select" id="badge_number" name="badge_number" required>
-                 <option value="" disabled {% if not visitor.BadgeNumber %}selected{% endif %}>Select Badge...</option>
-                {% for badge in badge_numbers %}
-                <option value="{{ badge }}" {% if visitor.BadgeNumber == badge %}selected{% endif %}>{{ badge }}</option>
-                {% endfor %}
-            </select>
+        <div class="mb-3">
+            <label for="vendor_name" class="form-label">Vendor Name (if applicable)</label>
+            <input type="text" class="form-control" id="vendor_name" name="vendor_name" value="{{ visitor.VendorName or '' }}">
         </div>
-         <div class="col-md-6">
-            <label for="here_to_see" class="form-label">Here to See <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="here_to_see" name="here_to_see" placeholder="Employee Name" value="{{ visitor.HostEmployeeName or '' }}" required>
-            <!-- Later: Could be replaced by AD lookup dropdown -->
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="branch" class="form-label">Branch <span class="text-danger">*</span></label>
+                <select class="form-select" id="branch" name="branch" required>
+                    <option value="" disabled {% if not visitor.Branch %}selected{% endif %}>Select Branch...</option>
+                    {% for branch in branches %}
+                    <option value="{{ branch }}" {% if visitor.Branch == branch %}selected{% endif %}>{{ branch }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="department" class="form-label">Department Visiting <span class="text-danger">*</span></label>
+                <select class="form-select" id="department" name="department" required>
+                    <option value="" disabled {% if not visitor.DepartmentVisited %}selected{% endif %}>Select Department...</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if visitor.DepartmentVisited == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label for="comments" class="form-label">Comments</label>
-        <textarea class="form-control" id="comments" name="comments" rows="3">{{ visitor.Comments or '' }}</textarea>
-    </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="badge_number" class="form-label">Badge Number Assigned <span class="text-danger">*</span></label>
+                <select class="form-select" id="badge_number" name="badge_number" required>
+                    <option value="" disabled {% if not visitor.BadgeNumber %}selected{% endif %}>Select Badge...</option>
+                    {% for badge in badge_numbers %}
+                    <option value="{{ badge }}" {% if visitor.BadgeNumber == badge %}selected{% endif %}>{{ badge }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="here_to_see" class="form-label">Here to See <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="here_to_see" name="here_to_see" placeholder="Employee Name" value="{{ visitor.HostEmployeeName or '' }}" required>
+            </div>
+        </div>
 
-    <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt me-1"></i>Check In Visitor</button>
-    <!-- Using text-danger class for asterisk color consistency -->
-    <small class="ms-2">Fields marked with <span class="text-danger">*</span> are required.</small>
-</form>
+        <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea class="form-control" id="comments" name="comments" rows="3">{{ visitor.Comments or '' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt me-1"></i>Check In Visitor
+        </button>
+        <small class="ms-2">Fields marked with <span class="text-danger">*</span> are required.</small>
+    </form>
+</div>
 {% endblock %}

@@ -15,7 +15,7 @@
     --light-input-border: #93A1A1;
 
     /* Button colors */
-    --light-btn-confirm: #859900;
+    --light-btn-confirm: #B48EAD; /* Changed from green to purple */
     --light-btn-view: #268BD2;
     --light-btn-cancel: #DC322F;
     --light-btn-secondary: #93A1A1;
@@ -39,7 +39,7 @@
     --dark-input-border: #4C566A;
 
     /* Button colors - Dark mode */
-    --dark-btn-confirm: #A3BE8C;
+    --dark-btn-confirm: #B48EAD; /* Changed from green to purple */
     --dark-btn-view: #88C0D0;
     --dark-btn-cancel: #BF616A;
     --dark-btn-secondary: #4C566A;
@@ -178,12 +178,14 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--light-bg) !important;
     background-color: var(--light-btn-confirm) !important;
     border-color: var(--light-btn-confirm) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
 }
 .btn-primary:hover {
     filter: brightness(110%);
     color: var(--light-bg) !important;
     background-color: var(--light-btn-confirm) !important;
     border-color: var(--light-btn-confirm) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow on hover */
 }
 
 /* Danger/Cancel button (Outline style - Check Out) */
@@ -243,6 +245,20 @@ h1, h2, h3, h4, h5, h6 {
     background-size: 16px 12px;
 }
 
+/* Card styles for form container */
+.card {
+    background-color: var(--light-card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.dark-mode .card {
+    background-color: var(--dark-card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
 
 /* Table Styles */
 .table {
@@ -256,14 +272,24 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     overflow: hidden;
+    table-layout: fixed;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    margin-bottom: 1rem;
 }
 
 .table th,
 .table td {
-    padding: 0.6rem 0.75rem;
+    padding: 0.75rem;
     vertical-align: middle;
     border-bottom: 1px solid var(--light-table-border);
     text-align: left;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .table thead th {
@@ -276,7 +302,22 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.5px;
     border-bottom: 2px solid var(--light-table-border);
     border-top: none;
+    white-space: nowrap;
 }
+
+/* Column width adjustments */
+.table th:nth-child(1), .table td:nth-child(1) { width: 3%; } /* ID */
+.table th:nth-child(2), .table td:nth-child(2),
+.table th:nth-child(3), .table td:nth-child(3) { width: 7%; } /* First/Last Name */
+.table th:nth-child(4), .table td:nth-child(4) { width: 7%; } /* Type */
+.table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* Host */
+.table th:nth-child(6), .table td:nth-child(6),
+.table th:nth-child(7), .table td:nth-child(7) { width: 8%; } /* Department/Branch */
+.table th:nth-child(8), .table td:nth-child(8) { width: 5%; } /* Badge */
+.table th:nth-child(9), .table td:nth-child(9),
+.table th:nth-child(10), .table td:nth-child(10) { width: 10%; } /* Check-In/Out Time */
+.table th:nth-child(11), .table td:nth-child(11) { width: 10%; } /* Status - Increased width */
+.table th:nth-child(12), .table td:nth-child(12) { width: 7%; } /* Actions - Decreased width */
 
 /* Table Hover Styles */
 .table-hover > tbody > tr:hover > * {
@@ -306,7 +347,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Badge Styles (Pill) */
 .badge {
-    display: inline-flex;
+    display: inline-block;
     align-items: center;
     padding: 0.5em 1em;
     font-size: 0.85em;
@@ -321,6 +362,9 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.5px;
     transition: all 0.2s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-right: 0; /* Reset margin */
+    position: relative;
+    z-index: 1;
 }
 
 .badge:hover {
@@ -399,11 +443,13 @@ h1, h2, h3, h4, h5, h6 {
 .visitor-ticker {
     background: linear-gradient(135deg, var(--status-info), #1a6b9e);
     color: white;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     margin-bottom: 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ticker-content {
@@ -411,6 +457,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
     animation: ticker-pulse 2s infinite alternate ease-in-out;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .ticker-item {
@@ -421,11 +468,13 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     letter-spacing: 0.5px;
     padding: 0 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .ticker-item i {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .visitor-count {
@@ -436,6 +485,13 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.1rem 0.8rem;
     margin: 0 0.2rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.visitor-label {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes ticker-pulse {
@@ -449,9 +505,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Dark mode ticker styles */
 .dark-mode .visitor-ticker {
-    background: linear-gradient(135deg, #5e81ac, #81a1c1);
+    background: linear-gradient(135deg, #5E81AC, #81A1C1);
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
 .dark-mode .visitor-count {
@@ -692,13 +750,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark-mode .btn-primary {
-    color: var(--dark-bg) !important;
+    color: white !important;
     background-color: var(--dark-btn-confirm) !important;
     border-color: var(--dark-btn-confirm) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
 }
 .dark-mode .btn-primary:hover {
     filter: brightness(110%);
-    color: var(--dark-bg) !important;
+    color: white !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow on hover */
 }
 
 .dark-mode .btn-outline-danger {
@@ -729,6 +789,14 @@ h1, h2, h3, h4, h5, h6 {
     border-color: var(--dark-input-border);
 }
 
+/* Make input fields lighter than background in dark mode */
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #3F4758; /* Slightly lighter than --dark-input-bg */
+    border: 1px solid #4C566A; /* Subtle border */
+    color: var(--dark-text); /* Standard text color */
+}
+
 .dark-mode .form-control::placeholder {
     color: var(--dark-text-secondary);
     opacity: 0.7;
@@ -737,7 +805,7 @@ h1, h2, h3, h4, h5, h6 {
 .dark-mode .form-control:focus,
 .dark-mode .form-select:focus {
     color: var(--dark-text);
-    background-color: var(--dark-input-bg);
+    background-color: #434C5E; /* Same as --dark-input-bg */
     border-color: var(--dark-btn-view);
     box-shadow: 0 0 0 0.25rem rgba(136, 192, 208, 0.35);
 }
@@ -844,3 +912,165 @@ h1, h2, h3, h4, h5, h6 {
 .dark-mode .footer-text i {
     color: var(--dark-text-secondary);
 }
+
+/* === GLOW EFFECTS === */
+.logo:hover {
+    filter: drop-shadow(0 0 6px rgba(38, 139, 210, 0.5)); /* light glow */
+    transform: scale(1.03);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.dark-mode .logo:hover {
+    filter: drop-shadow(0 0 8px rgba(136, 192, 208, 0.7)); /* brighter in dark */
+}
+
+/* === BUTTON GLOW ON HOVER === */
+.btn-primary:hover,
+.btn-outline-danger:hover {
+    box-shadow: 0 0 10px rgba(133, 153, 0, 0.3), 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px) scale(1.02);
+}
+
+.dark-mode .btn-primary:hover,
+.dark-mode .btn-outline-danger:hover {
+    box-shadow: 0 0 10px rgba(163, 190, 140, 0.3), 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* === FORM CONTAINER STYLING === */
+form {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode form {
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Redesigned checkout button - filled bright red with white text */
+.checkout-btn {
+    background-color: var(--light-btn-cancel) !important;
+    border: 1px solid var(--light-btn-cancel);
+    box-shadow: 0 2px 4px rgba(220, 50, 47, 0.2);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem; /* Medium padding */
+    font-size: 1rem; /* Standard font size */
+    border-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 1.2;
+    color: white !important;
+    width: auto;
+    min-width: 70px; /* Medium width button */
+    margin: 0 auto; /* Center the button in the cell */
+    position: relative;
+    letter-spacing: 0.5px;
+    z-index: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Added text shadow */
+}
+
+.checkout-btn i {
+    margin-right: 0.1rem; /* Reduced spacing between icon and text */
+    font-size: 0.9em;
+}
+
+/* Hide icon on small screens to make button more compact */
+@media (max-width: 768px) {
+    .checkout-btn i {
+        margin-right: 0;
+    }
+}
+
+.checkout-btn:hover {
+    background-color: #c82333 !important; /* Slightly darker red on hover */
+    color: white !important;
+    box-shadow: 0 0 15px rgba(220, 50, 47, 0.7), 0 0 5px rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    border-color: #c82333;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 1px 3px rgba(0, 0, 0, 0.7);
+    transition: all 0.2s ease;
+}
+
+.dark-mode .checkout-btn {
+    background-color: #DC322F !important; /* Same bright red as light mode */
+    border: 1px solid #DC322F;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(220, 50, 47, 0.3);
+}
+
+.dark-mode .checkout-btn:hover {
+    background-color: #c82333 !important; /* Same hover color as light mode */
+    color: white !important;
+    box-shadow: 0 0 15px rgba(220, 50, 47, 0.7), 0 0 5px rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px) scale(1.05);
+    border-color: #c82333;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+}
+
+/* Override any Bootstrap styles */
+.btn.btn-outline-danger.checkout-btn {
+    background-color: var(--light-btn-cancel) !important;
+    border-radius: 3px !important;
+    color: white !important;
+}
+
+.dark-mode .btn.btn-outline-danger.checkout-btn {
+    background-color: var(--light-btn-cancel) !important; /* Use light mode red color */
+    border-color: var(--light-btn-cancel) !important;
+    color: white !important;
+}
+
+/* PULSE EFFECT ON VISITOR COUNT */
+.visitor-count.pulse {
+    animation: visitorPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes visitorPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Row Hover Lift */
+.table-hover tbody tr {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    background-color: var(--light-card-bg-alt);
+}
+
+.dark-mode .table-hover tbody tr:hover {
+    background-color: var(--dark-card-bg-alt);
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+}
+
+/* Remove any spacing and weird layout from the checkout form */
+.checkout-form {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    display: inline;
+}
+
+/* This section was removed to eliminate duplicate styles */

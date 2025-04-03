@@ -64,3 +64,28 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn("Theme toggle element (#theme-toggle) not found.");
     }
 });
+
+// Smoothly animate the visitor count number on page load
+document.addEventListener("DOMContentLoaded", () => {
+    const countEl = document.getElementById("visitor-count");
+    if (countEl) {
+        const finalCount = parseInt(countEl.textContent.trim(), 10);
+        let current = 0;
+        const duration = 1000; // 1 second total
+        const steps = 30;
+        const increment = Math.ceil(finalCount / steps);
+        const interval = duration / steps;
+
+        countEl.classList.add("pulse");
+
+        const counter = setInterval(() => {
+            current += increment;
+            if (current >= finalCount) {
+                countEl.textContent = finalCount;
+                clearInterval(counter);
+            } else {
+                countEl.textContent = current;
+            }
+        }, interval);
+    }
+});
