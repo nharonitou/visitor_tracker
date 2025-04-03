@@ -103,42 +103,7 @@
                                     <span class="badge bg-info">Expected</span>
                                 </td>
                             <td style="text-align: center;">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkinModal{{ visitor.VisitorID }}">
-                                    Check In
-                                </button>
-                                
-                                <!-- Check-in Modal -->
-                                <div class="modal fade" id="checkinModal{{ visitor.VisitorID }}" tabindex="-1" aria-labelledby="checkinModalLabel{{ visitor.VisitorID }}" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="checkinModalLabel{{ visitor.VisitorID }}">Check In {{ visitor.GuestFirstName }} {{ visitor.GuestLastName }}</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="{{ url_for('checkin_pending', visitor_id=visitor.VisitorID) }}" method="POST">
-                                                    <div class="mb-3">
-                                                        <label for="badge_number{{ visitor.VisitorID }}" class="form-label">Assign Badge Number</label>
-                                                        <select class="form-select" id="badge_number{{ visitor.VisitorID }}" name="badge_number" required>
-                                                            <option value="" disabled selected>Select Badge...</option>
-                                                            <option value="No Badge">No badge, being escorted</option>
-                                                            {% for badge in badge_numbers %}
-                                                            <option value="{{ badge }}">{{ badge }}</option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
-                                                    <div class="d-grid">
-                                                        <button type="submit" class="btn btn-primary">
-                                                            <i class="fas fa-sign-in-alt me-2"></i>Complete Check-In
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- No action available -->
                             </td>
                             </tr>
                             {% endif %}
